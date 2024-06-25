@@ -25,6 +25,7 @@ const useWeather = () => {
         localStorage.getItem("forecastData")
       );
       console.log(cachedWeatherData);
+      console.log("tahmin", cachedForecastData);
 
       if (
         cachedWeatherData &&
