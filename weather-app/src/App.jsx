@@ -1,40 +1,45 @@
-import { useState, useEffect } from "react";
-import { useGeolocation } from "@uidotdev/usehooks";
-import axios from "axios";
+import useWeather from "./hooks/useWeather";
 
 function App() {
-  const [weather, setWeather] = useState();
-  const geolocation = useGeolocation();
+  console.log("app re-rendered");
+  const {
+    weather,
+    forecast,
+    loadingWeather,
+    loadingForecast,
+    errorWeather,
+    errorForecast,
+  } = useWeather();
 
-  useEffect(() => {
-    const getWeatherData = async (lat, lon) => {
-      const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
-      console.log(apiKey);
+  if (loadingWeather || loadingForecast) {
+    return <p>Loading...</p>;
+  }
 
-      try {
-        const { data } = await axios.get(
-          `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
-        );
-        setWeather(data);
-        console.log(data);
-      } catch {
-        console.log("Hava durumu verileri alınamadı.");
-      }
-    };
+  if (errorWeather || errorForecast) {
+    return <p>Error: {errorWeather || errorForecast}</p>;
+  }
 
-    if (geolocation.latitude && geolocation.longitude) {
-      getWeatherData(geolocation.latitude, geolocation.longitude);
-    }
-  }, [geolocation]);
   return (
     <>
-      <div className="text-blue-500">hava durumu</div>
+      <div className="text-blue-500">Hava Durumu</div>
       {weather && (
         <div>
-          <p>Temperature: {weather.main.temp} °C</p>
+          <p className="text-red-500">Temperature: {weather.main.temp} °C</p>
           <p>Humidity: {weather.main.humidity} %</p>
           <p>Wind Speed: {weather.wind.speed} m/s</p>
-          <p>şehir {weather.name} </p>
+          <p>City: {weather.name}</p>
+        </div>
+      )}
+      {forecast && forecast.length > 0 && (
+        <div>
+          <h2>Forecast:</h2>
+          {forecast.map((day, index) => (
+            <div key={index}>
+              <p>Date: {new Date(day.dt * 1000).toLocaleDateString()}</p>
+
+              <p>Weather: {day.weather[0].description}</p>
+            </div>
+          ))}
         </div>
       )}
     </>
