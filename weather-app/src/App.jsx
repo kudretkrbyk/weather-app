@@ -38,9 +38,9 @@ const App = memo(function App() {
 
   return (
     <>
-      <div className="z-50 w-full h-screen relative overflow-y-hidden bg-gradient-to-b dark:from-[#031027] dark:to-[#271010] from-[#F9FFFF] to-[#38C8E6] flex flex-col gap-2 items-center ">
-        <div className="z-10 absolute w-full h-full overflow-hidden">
-          <img className="w-full h-full " src={main} alt="Background"></img>
+      <div className="z-50 w-full h-screen relative lg:overflow-y-hidden bg-gradient-to-b dark:from-[#031027] dark:to-[#271010] from-[#F9FFFF] to-[#38C8E6] flex flex-col gap-2 items-center p-2 ">
+        <div className="z-10 absolute w-full h-screen left-0 top-0 overflow-hidden">
+          <img className="w-full h-screen " src={main} alt="Background"></img>
         </div>
 
         <Navbar setCity={setCity} handleUseLocation={handleUseLocation} />

@@ -28,7 +28,7 @@ const Navbar = memo(function Navbar({ setCity, handleUseLocation }) {
   }, [darkMode]);
 
   return (
-    <div className="z-50 w-7/12 flex flex-col items-center justify-between p-1 gap-4 dark:text-white text-[#021A33]">
+    <div className="z-50 w-full lg:w-7/12 flex flex-col items-center justify-between p-1 gap-4 dark:text-white text-[#021A33]">
       <div className="w-full flex items-center justify-between">
         <div className="p-4">React Hava Durumu Uygulaması</div>
         <div>
