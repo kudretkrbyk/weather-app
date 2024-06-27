@@ -1,14 +1,13 @@
-// src/hooks/useWeather.js
-
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchWeather } from "../redux/slices/weatherSlice";
-import { fetchForecast } from "../redux/slices/forecastSlice";
-import { useGeolocation } from "@uidotdev/usehooks";
+import { fetchWeather, fetchWeatherByCity } from "../redux/slices/weatherSlice";
+import {
+  fetchForecast,
+  fetchForecastByCity,
+} from "../redux/slices/forecastSlice";
 
-const useWeather = () => {
+const useWeather = ({ city, latitude, longitude }) => {
   const dispatch = useDispatch();
-  const geolocation = useGeolocation();
 
   const weather = useSelector((state) => state.weather.weather);
   const forecast = useSelector((state) => state.forecast.forecast);
@@ -24,10 +23,68 @@ const useWeather = () => {
       const cachedForecastData = JSON.parse(
         localStorage.getItem("forecastData")
       );
-      console.log(cachedWeatherData);
-      console.log("tahmin", cachedForecastData);
 
-      if (
+      if (city) {
+        try {
+          const weatherResponse = await dispatch(
+            fetchWeatherByCity(city)
+          ).unwrap();
+          const forecastResponse = await dispatch(
+            fetchForecastByCity(city)
+          ).unwrap();
+
+          // Save new data to local storage
+          localStorage.setItem(
+            "weatherData",
+            JSON.stringify({
+              data: weatherResponse,
+              timestamp: new Date().getTime(),
+            })
+          );
+          localStorage.setItem(
+            "forecastData",
+            JSON.stringify({
+              data: forecastResponse,
+              timestamp: new Date().getTime(),
+            })
+          );
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      } else if (latitude && longitude) {
+        try {
+          const weatherResponse = await dispatch(
+            fetchWeather({
+              latitude,
+              longitude,
+            })
+          ).unwrap();
+          const forecastResponse = await dispatch(
+            fetchForecast({
+              latitude,
+              longitude,
+            })
+          ).unwrap();
+
+          // Save new data to local storage
+          localStorage.setItem(
+            "weatherData",
+            JSON.stringify({
+              data: weatherResponse,
+              timestamp: new Date().getTime(),
+            })
+          );
+          localStorage.setItem(
+            "forecastData",
+            JSON.stringify({
+              data: forecastResponse,
+              timestamp: new Date().getTime(),
+            })
+          );
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      } else if (
         cachedWeatherData &&
         cachedForecastData &&
         new Date().getTime() - cachedWeatherData.timestamp <
@@ -44,43 +101,11 @@ const useWeather = () => {
           type: "forecast/setForecast",
           payload: cachedForecastData.data,
         });
-      } else {
-        // Fetch new data from API if no valid cached data found or expired
-        if (geolocation.latitude && geolocation.longitude) {
-          try {
-            const weatherResponse = await fetchWeather({
-              latitude: geolocation.latitude,
-              longitude: geolocation.longitude,
-            })(dispatch);
-            const forecastResponse = await fetchForecast({
-              latitude: geolocation.latitude,
-              longitude: geolocation.longitude,
-            })(dispatch);
-
-            // Save new data to local storage
-            localStorage.setItem(
-              "weatherData",
-              JSON.stringify({
-                data: weatherResponse.data,
-                timestamp: new Date().getTime(),
-              })
-            );
-            localStorage.setItem(
-              "forecastData",
-              JSON.stringify({
-                data: forecastResponse.data,
-                timestamp: new Date().getTime(),
-              })
-            );
-          } catch (error) {
-            console.error("Error fetching data:", error);
-          }
-        }
       }
     };
 
     fetchData();
-  }, [geolocation, dispatch]);
+  }, [city, latitude, longitude, dispatch]);
 
   return {
     weather,

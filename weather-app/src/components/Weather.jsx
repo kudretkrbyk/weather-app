@@ -1,11 +1,22 @@
 import { useSelector } from "react-redux";
-import sunSvg from "../assets/sun.svg";
+import selectWeatherIcon from "../utils/selectWeatherIcon";
+import { makeSelectWeather } from "../selectors/weatherSelectors";
 
-export default function Weather() {
-  const weather = useSelector((state) => state.weather.weather);
+function Weather({ loadingWeather, errorWeather }) {
+  console.log("weather re rendered");
+  const weather = useSelector(makeSelectWeather);
+  const weatherIcon = selectWeatherIcon(weather.weather[0].main);
   //console.log("deneme", weather.weather[0].description);
+
+  if (loadingWeather) {
+    return <div>Loading weather...</div>;
+  }
+
+  if (errorWeather) {
+    return <p>Error loading weather: {errorWeather}</p>;
+  }
   return (
-    <div className="z-50 flex flex-col bg-[#021A33] p-5 items-center justify-center w-7/12 gap-2 text-white rounded-2xl">
+    <div className="z-50 flex flex-col dark:bg-[#021A33] bg-slate-300 p-3 items-center justify-center w-7/12 gap-2 dark:text-white text-[#021A33] rounded-2xl">
       <div className="text-3xl">Bugün için Hava Durumu</div>
       {weather && (
         <div className="flex items-center justify-around w-full">
@@ -14,7 +25,7 @@ export default function Weather() {
 
             <div className="flex items-center justify-start w-full gap-5">
               <div className="">
-                <img className="size-" src={sunSvg} alt="Icon" />
+                <img className="size-" src={weatherIcon} alt="Icon" />
               </div>
               <div className="flex flex-col items-start justify-center w-full">
                 <div className="text-8xl">
@@ -28,7 +39,7 @@ export default function Weather() {
           <table className=" table-fixed   w-full">
             <tr className="text-left w-full ">
               <th className="">Hissedilen Sıcaklık</th>
-              <th>{weather.main.feels_like}°C</th>
+              <th>{Math.floor(weather.main.feels_like)}°C</th>
             </tr>
             <tr className="text-left">
               <th>nem</th>
@@ -36,7 +47,7 @@ export default function Weather() {
             </tr>
             <tr className="text-left">
               <th>rüzgar</th>
-              <th>{weather.wind.speed}</th>
+              <th>{Math.floor(weather.wind.speed)}</th>
             </tr>
             <tr className="text-left">
               <th>basınç</th>
@@ -48,3 +59,4 @@ export default function Weather() {
     </div>
   );
 }
+export default Weather;

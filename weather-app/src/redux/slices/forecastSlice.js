@@ -1,4 +1,3 @@
-// src/redux/slices/forecastSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -11,6 +10,15 @@ export const fetchForecast = createAsyncThunk(
   async ({ latitude, longitude }) => {
     const response = await axios.get(
       `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&lang=${userPrimaryLanguage}&units=metric`
+    );
+    return response.data;
+  }
+);
+export const fetchForecastByCity = createAsyncThunk(
+  "forecast/fetchForecastByCity",
+  async (city) => {
+    const response = await axios.get(
+      `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&lang=${userPrimaryLanguage}&units=metric`
     );
     return response.data;
   }
@@ -49,6 +57,18 @@ const forecastSlice = createSlice({
         state.forecast = action.payload;
       })
       .addCase(fetchForecast.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(fetchForecastByCity.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchForecastByCity.fulfilled, (state, action) => {
+        state.loading = false;
+        state.forecast = action.payload;
+      })
+      .addCase(fetchForecastByCity.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

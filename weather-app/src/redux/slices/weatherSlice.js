@@ -15,6 +15,15 @@ export const fetchWeather = createAsyncThunk(
     return response.data;
   }
 );
+export const fetchWeatherByCity = createAsyncThunk(
+  "weather/fetchWeatherByCity",
+  async (city) => {
+    const response = await axios.get(
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&lang=${userPrimaryLanguage}&units=metric`
+    );
+    return response.data;
+  }
+);
 
 // weatherSlice'ı createSlice kullanarak tanımlayalım
 const weatherSlice = createSlice({
@@ -50,6 +59,14 @@ const weatherSlice = createSlice({
         state.weather = action.payload;
       })
       .addCase(fetchWeather.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(fetchWeatherByCity.fulfilled, (state, action) => {
+        state.loading = false;
+        state.weather = action.payload;
+      })
+      .addCase(fetchWeatherByCity.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

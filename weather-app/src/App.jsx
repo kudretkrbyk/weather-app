@@ -1,12 +1,20 @@
-import useWeather from "./hooks/useWeather";
+import { useGeolocation } from "@uidotdev/usehooks";
 
-import Navbar from "./components/Navbar";
-import Weather from "./components/Weather";
-import Forecast from "./components/Forecast";
+import React, { memo, useState, useCallback } from "react";
 import main from "./assets/main.svg";
+import useWeather from "./hooks/useWeather";
+import Weather from "./components/Weather";
+import Navbar from "./components/Navbar";
+import Forecast from "./components/Forecast";
 
-function App() {
-  console.log("app re-rendered");
+const MemoizedWeather = React.memo(Weather);
+const MemoizedForecast = React.memo(Forecast);
+
+const App = memo(function App() {
+  console.log("App component re-rendered");
+  const [city, setCity] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [latitude, setLatitude] = useState("");
   const {
     weather,
     forecast,
@@ -14,49 +22,43 @@ function App() {
     loadingForecast,
     errorWeather,
     errorForecast,
-  } = useWeather();
+  } = useWeather({ city, longitude, latitude });
 
-  if (loadingWeather || loadingForecast) {
-    return <p>Loading...</p>;
-  }
+  const handleUseLocation = useCallback(() => {
+    console.log("app use location geldi");
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      setLatitude(latitude);
+      setLongitude(longitude);
+      setCity(""); // city state'ini boş olarak ayarla
+    });
+  }, []);
 
-  if (errorWeather || errorForecast) {
-    return <p>Error: {errorWeather || errorForecast}</p>;
-  }
+  console.log("App city", city);
 
   return (
     <>
-      <div className="z-50 w-full h-screen relative overflow-y-hidden bg-gradient-to-b from-[#031027] to-[#271010] flex flex-col gap-4 items-center ">
+      <div className="z-50 w-full h-screen relative overflow-y-hidden bg-gradient-to-b dark:from-[#031027] dark:to-[#271010] from-[#F9FFFF] to-[#38C8E6] flex flex-col gap-2 items-center ">
         <div className="z-10 absolute w-full h-full overflow-hidden">
-          <img className="w-full h-full " src={main}></img>
+          <img className="w-full h-full " src={main} alt="Background"></img>
         </div>
-        <Navbar></Navbar>
-        {weather && (
-          // <div>
-          //   <p className="text-red-500">Temperature: {weather.main.temp} °C</p>
-          //   <p>Humidity: {weather.main.humidity} %</p>
-          //   <p>Wind Speed: {weather.wind.speed} m/s</p>
-          //   <p>City: {weather.name}</p>
-          // </div>
-          <Weather></Weather>
-        )}
-        {forecast && forecast.length > 0 && (
-          <Forecast></Forecast>
-          // <div>
-          //   <h2>Forecast:</h2>
-          //   {forecast.map((day, index) => (
-          //     <div key={index}>
-          //       <p>Date: {new Date(day.dt * 1000).toLocaleDateString()}</p>
 
-          //       <p>Weather: {day.weather[0].description}</p>
-          //     </div>
-          //   ))}
-          //   <Firstcomp></Firstcomp>
-          // </div>
+        <Navbar setCity={setCity} handleUseLocation={handleUseLocation} />
+
+        <MemoizedWeather
+          loadingWeather={loadingWeather}
+          errorWeather={errorWeather}
+        />
+
+        {forecast && (
+          <MemoizedForecast
+            loadingForecast={loadingForecast}
+            errorForecast={errorForecast}
+          />
         )}
       </div>
     </>
   );
-}
+});
 
 export default App;

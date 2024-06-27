@@ -1,27 +1,26 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import Search from "./Search";
 import { MdDarkMode } from "react-icons/md";
 
-export default function Navbar() {
-  const [darkMode, setDarkMode] = useState(false);
+const Navbar = memo(function Navbar({ setCity, handleUseLocation }) {
+  console.log("Navbar component re-rendered");
+  const [darkMode, setDarkMode] = useState("light");
 
   useEffect(() => {
     const darkModeLocal = localStorage.getItem("darkModeLocal");
     if (darkModeLocal !== null) {
-      setDarkMode(JSON.parse(darkModeLocal));
+      setDarkMode(darkModeLocal === "dark" ? "dark" : "light");
     }
-    console.log("dark mod local", darkMode);
   }, []);
 
   const handleDarkModControl = () => {
-    const newDarkMode = !darkMode;
-    setDarkMode(newDarkMode);
-    localStorage.setItem("darkModeLocal", JSON.stringify(newDarkMode));
+    const newMode = darkMode === "light" ? "dark" : "light";
+    setDarkMode(newMode);
+    localStorage.setItem("darkModeLocal", newMode);
   };
-  console.log("dark modu");
 
   useEffect(() => {
-    if (darkMode) {
+    if (darkMode === "dark") {
       document.body.classList.add("dark");
     } else {
       document.body.classList.remove("dark");
@@ -29,9 +28,9 @@ export default function Navbar() {
   }, [darkMode]);
 
   return (
-    <div className="z-50 w-7/12 flex flex-col items-center justify-between p-5 gap-4 text-white">
+    <div className="z-50 w-7/12 flex flex-col items-center justify-between p-1 gap-4 dark:text-white text-[#021A33]">
       <div className="w-full flex items-center justify-between">
-        <div>React Hava Durumu Uygulaması</div>
+        <div className="p-4">React Hava Durumu Uygulaması</div>
         <div>
           <MdDarkMode
             onClick={handleDarkModControl}
@@ -39,7 +38,9 @@ export default function Navbar() {
           />
         </div>
       </div>
-      <Search />
+      <Search setCity={setCity} handleUseLocation={handleUseLocation} />
     </div>
   );
-}
+});
+
+export default Navbar;
