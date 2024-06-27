@@ -19,7 +19,7 @@ const Forecast = memo(function Forecast({ loadingForecast, errorForecast }) {
   }
 
   return (
-    <div className="z-50 flex flex-col w-full w-7/12 dark:text-white text-[#021A33] dark:bg-[#021A33] bg-slate-300 p-3 rounded-2xl opacity-70 shadow-2xl">
+    <div className="z-50 flex flex-col w-full h-full lg:w-7/12 overflow-x-scroll sm:overflow-hidden overflow-y-hidden dark:text-white text-[#021A33] dark:bg-[#021A33] bg-slate-300 p-3 rounded-2xl opacity-70 shadow-2xl">
       <div className="p-1">Haftalık Tahmin Raporu</div>
       <div className="w-full h-[2px] bg-black"></div>
 
@@ -29,7 +29,7 @@ const Forecast = memo(function Forecast({ loadingForecast, errorForecast }) {
             key={index}
             className="flex flex-col gap-2 items-center justify-center w-full p-3"
           >
-            <div>
+            <div className="flex flex-col items-center">
               <div> {forecast.date}</div>
               <div> {forecast.day}</div>
             </div>
