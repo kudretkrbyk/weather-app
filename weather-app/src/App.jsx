@@ -1,5 +1,3 @@
-import { useGeolocation } from "@uidotdev/usehooks";
-
 import React, { memo, useState, useCallback } from "react";
 import main from "./assets/main.svg";
 import useWeather from "./hooks/useWeather";
@@ -16,7 +14,6 @@ const App = memo(function App() {
   const [longitude, setLongitude] = useState("");
   const [latitude, setLatitude] = useState("");
   const {
-    weather,
     forecast,
     loadingWeather,
     loadingForecast,
