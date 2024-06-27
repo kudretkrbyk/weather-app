@@ -23,7 +23,7 @@ function Weather({ loadingWeather, errorWeather }) {
     return <p>Error loading weather: {errorWeather}</p>;
   }
   return (
-    <div className="z-50 flex flex-col dark:bg-[#021A33] bg-slate-300 p-3 items-center justify-center w-full lg:w-7/12 gap-2 dark:text-white text-[#021A33] rounded-2xl">
+    <div className="z-50 flex flex-col dark:bg-[#021A33] bg-slate-300 p-3 items-center justify-center w-full lg:w-7/12 gap-2 dark:text-white text-[#021A33] opacity-70 rounded-2xl">
       <div className="text-3xl">Bugün için Hava Durumu</div>
       {weather && (
         <div className="flex items-center justify-around w-full">
